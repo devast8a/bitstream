@@ -20,8 +20,8 @@ cdef class BitStream:
     cdef int64 offsetWrite
 
     cpdef write(BitStream self, value, type key)
-    cpdef read(BitStream self, type key, int length)
-    cpdef readInt(BitStream self, int size, int length=?)
+    cpdef read(BitStream self, type key, int count=?)
+    cpdef readInt(BitStream self, int size, int count=?)
 
     cpdef void seek(BitStream self, int64 offset)
     cpdef State save(BitStream self)

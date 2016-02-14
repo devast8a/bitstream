@@ -47,7 +47,7 @@ cdef class BitStream:
         # Advance pointer
         self.offsetWrite += typeinfo.length
 
-    cpdef read(BitStream self, type key, int length):
+    cpdef read(BitStream self, type key, int count = -1):
         cdef TypeInfo typeinfo = self.database[key]
         cdef State state
         cdef int64 byte
@@ -56,39 +56,62 @@ cdef class BitStream:
         output = []
 
         # Allow the reader to read an arbitrary number of bits
-        #   from the stream, in order to properly recover we save
-        #   our state and restore it in the event of an exception
-        #   or other failure.
+        #   from the stream. In order to properly recover we save
+        #   our state and restore it in the event of a underrun
+        #   exception.
         if typeinfo.length == -1:
-            state = self.save()
+            raise NotImplementedError("Types with an arbitrary size aren't properly support yet")
 
+            state = self.save()
             output = []
             try:
-                for i in range(length):
+                for i in range(count):
                     output.append(typeinfo.reader(self))
             except:
                 self.restore(state)
                 raise
+            return output
 
-        # If the reader knows ahead of time how much data it will consume
-        #  we can take control of the pointers instead.
+        # Otherwise, If the reader knows ahead of time how much data it
+        #   will consume, we can take control of the pointers, knowing
+        #   if we're going to underrun before we read. So we don't have
+        #   to save our state.
         else:
-            # Check if we're going to read more data than is available
-            if self.offsetRead + (typeinfo.length * length) > self.offsetWrite:
-                raise ReadError("end of stream")
+            # If no count was specified, read only a single object from the
+            #    stream and directly return it.
+            if count == -1:
+                # Check for underrun
+                if self.offsetRead + typeinfo.length > self.offsetWrite:
+                    raise ReadError("end of stream")
 
-            for i in range(length):
                 byte = self.offsetRead / UNIT_SIZE
                 bit = self.offsetRead % UNIT_SIZE
 
-                output.append(typeinfo.reader(self, byte, bit))
+                output = typeinfo.reader(self, byte, bit)
 
                 # Advance pointer
                 self.offsetRead += typeinfo.length
 
-            return output
+                return output
 
-    cpdef readInt(BitStream self, int size, int length = 1):
+            # Return an array
+            else:
+                # Check for underrun
+                if self.offsetRead + (typeinfo.length * count) > self.offsetWrite:
+                    raise ReadError("end of stream")
+
+                output = []
+                for i in range(count):
+                    byte = self.offsetRead / UNIT_SIZE
+                    bit = self.offsetRead % UNIT_SIZE
+
+                    output.append(typeinfo.reader(self, byte, bit))
+
+                    # Advance pointer
+                    self.offsetRead += typeinfo.length
+                return output
+
+    cpdef readInt(BitStream self, int size, int count = 1):
         pass
 
     cpdef void seek(BitStream self, int64 offset):

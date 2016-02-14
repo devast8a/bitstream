@@ -161,6 +161,23 @@ def test_pX_bool(stream):
     """Read and write, bool (Alignment does not matter)"""
     perf_test(stream, True, bool, False)
 
+def test_api_nolength(stream):
+    """Test that read with no length specified returns the type directly"""
+
+    for i in range(NUMBER):
+        stream.write(0xFF, uint8)
+        v = stream.read(uint8)
+        assert(v == 0xFF)
+
+def test_api_length(stream):
+    """Test that read with a length of 1 specified returns the type wrapped in an array-like"""
+
+    for i in range(NUMBER):
+        stream.write(0xFF, uint8)
+        v = stream.read(uint8, 1)
+        assert(v == [0xFF])
+
+
 def run_tests():
     import timeit
 
