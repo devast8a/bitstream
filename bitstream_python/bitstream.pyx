@@ -16,7 +16,7 @@ class ReadError(Exception):
 cdef class BitStream:
     def __init__(self, stream = None):
         self.database = defaultFactory.database
-        
+
         if stream == None:
             self.stream = []
             self.offsetRead = 0
@@ -53,6 +53,8 @@ cdef class BitStream:
         cdef int64 byte
         cdef int64 bit
 
+        output = []
+
         # Allow the reader to read an arbitrary number of bits
         #   from the stream, in order to properly recover we save
         #   our state and restore it in the event of an exception
@@ -79,12 +81,12 @@ cdef class BitStream:
                 byte = self.offsetRead / UNIT_SIZE
                 bit = self.offsetRead % UNIT_SIZE
 
-                output = typeinfo.reader(self, byte, bit)
+                output.append(typeinfo.reader(self, byte, bit))
 
                 # Advance pointer
                 self.offsetRead += typeinfo.length
 
-                return output
+            return output
 
     cpdef readInt(BitStream self, int size, int length = 1):
         pass
