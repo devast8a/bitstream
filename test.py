@@ -94,32 +94,25 @@ def test_underrun(stream):
         stream.write(0xAA, uint8)
         assert(stream.read(uint8, 1) == [0xAA])
 
-def test_scanning_large(stream):
-    """Scan along the bitstream one bit at a time, reading various types (large data set)"""
-    for i in range(NUMBER):
+def scanning(stream, number):
+    for i in range(number):
         stream.write(0xFF, uint8)
 
-    for i in range(NUMBER / 10):
-        stream.read(bool, 1)
+    for i in range(number):
+        stream.read(bool)
 
         state = stream.save()
         assert(stream.read(uint8, 1) == [0xFF])
         assert(stream.read(uint16, 1) == [0xFFFF])
         stream.restore(state)
+
+def test_scanning_large(stream):
+    """Scan along the bitstream one bit at a time, reading various types (large data set)"""
+    scanning(stream, NUMBER / 10)
 
 def test_scanning_small(stream):
     """Scan along the bitstream one bit at a time, reading various types (small data set)"""
-    for i in range(NUMBER):
-        stream.write(0xFF, uint8)
-
-    for i in range(NUMBER / 100):
-        stream.read(bool, 1)
-
-        state = stream.save()
-        assert(stream.read(uint8, 1) == [0xFF])
-        assert(stream.read(uint16, 1) == [0xFFFF])
-        stream.restore(state)
-
+    scanning(stream, NUMBER / 100)
 
 def perf_test(stream, value, type, unaligned):
     # Make sure it's working as expected, don't
@@ -135,11 +128,11 @@ def perf_test(stream, value, type, unaligned):
         stream.write(value, type)
 
     if unaligned:
-        stream.read(bool, 1)
+        stream.read(bool)
 
     assert(stream.read(type, 1) == [value])
     for i in range(NUMBER):
-        stream.read(type, 1)
+        stream.read(type)
 
 def test_pA_u8(stream):
     """Read and write, Aligned, uint8"""
