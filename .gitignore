@@ -1,0 +1,9 @@
+# Build directories
+bitstream_python.egg-info/
+build/
+dist/
+
+# Compiled files
+*.pyc
+*.pyo
+*.c
