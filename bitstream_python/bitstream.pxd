@@ -24,6 +24,8 @@ cdef class BitStream:
     cpdef readInt(BitStream self, int size, int count=?)
 
     cpdef void seek(BitStream self, int64 offset)
+    cpdef seekTo(BitStream self, list searchFor)
+
     cpdef State save(BitStream self)
     cpdef void restore(BitStream self, State state)
 

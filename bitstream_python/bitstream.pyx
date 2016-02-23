@@ -111,6 +111,42 @@ cdef class BitStream:
                     self.offsetRead += typeinfo.length
                 return output
 
+    cpdef seekTo(BitStream self, list searchFor):
+        stream = self.stream
+        cdef int32 byte = self.offsetRead / UNIT_SIZE
+        cdef int32 bit = self.offsetRead % UNIT_SIZE
+
+        cdef uint8 s1 = stream[byte]
+        cdef uint8 s2 = stream[byte + 1]
+
+        while self.offsetRead < self.offsetWrite - 8:
+            if bit == 8:
+                bit = 0
+                byte += 1
+
+                s1 = s2
+                s2 = stream[byte + 1]
+
+            value = (s1 << bit) | (s2 >> (8 - bit)) & 0xFF
+
+            for search in searchFor:
+                if value == search:
+                    return True
+
+            bit += 1
+            self.offsetRead += 1
+
+        # Check the last byte
+        if bit == 8:
+            value = s2 & 0xFF
+        else:
+            value = (s1 << bit) | (s2 >> (8 - bit)) & 0xFF
+        for search in searchFor:
+            if value == search:
+                return True
+
+        return False
+
     cpdef readInt(BitStream self, int size, int count = 1):
         pass
 
