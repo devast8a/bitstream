@@ -29,23 +29,36 @@ cdef class BitStream:
     def __len__(self):
         return self.offsetWrite - self.offsetRead
 
-    cpdef write(BitStream self, value, type key):
+    cpdef write(BitStream self, value, type key, int count = -1):
         cdef TypeInfo typeinfo = self.database[key]
         cdef validator = typeinfo.validator
         cdef writer = typeinfo.writer
         cdef int64 byte
         cdef int64 bit
 
-        if validator and not validator(value):
-            raise Exception("Input did not validate")
+        if count == -1:
+            byte = self.offsetWrite / UNIT_SIZE
+            bit = self.offsetWrite % UNIT_SIZE
 
-        byte = self.offsetWrite / UNIT_SIZE
-        bit = self.offsetWrite % UNIT_SIZE
+            if validator and not validator(value):
+                raise Exception("Input did not validate")
 
-        writer(self, value, byte, bit)
+            writer(self, value, byte, bit)
 
-        # Advance pointer
-        self.offsetWrite += typeinfo.length
+            # Advance pointer
+            self.offsetWrite += typeinfo.length
+        else:
+            for i in range(count):
+                byte = self.offsetWrite / UNIT_SIZE
+                bit = self.offsetWrite % UNIT_SIZE
+
+                if validator and not validator(value[i]):
+                    raise Exception("Input did not validate")
+
+                writer(self, value[i], byte, bit)
+
+                # Advance pointer
+                self.offsetWrite += typeinfo.length
 
     cpdef read(BitStream self, type key, int count = -1):
         cdef TypeInfo typeinfo = self.database[key]
