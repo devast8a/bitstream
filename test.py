@@ -1,4 +1,4 @@
-import pyximport; pyximport.install()
+import pyximport_fix
 from bitstream import BitStream
 from numpy import *
 from bitstream_python.bitstream import BitStream as BitStream2
