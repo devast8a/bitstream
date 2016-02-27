@@ -46,7 +46,7 @@ To build/install:
 
 # Installing
 1. Install required dependencies
-2. Run $ python setup.py install
+2. Run `$ python setup.py install`
 
 # License
 This library is licensed under MIT.
