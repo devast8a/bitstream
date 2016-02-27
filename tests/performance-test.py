@@ -1,7 +1,6 @@
-import pyximport_fix
 from bitstream import BitStream
 from numpy import *
-from bitstream_python.bitstream import BitStream as BitStream2
+from bitstream_python import BitStream as BitStream2
 
 NUMBER = 200000
 

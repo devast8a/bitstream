@@ -44,9 +44,20 @@ To build/install:
 * Cython
 * numpy
 
+To test:
+* Cython
+* numpy
+* hypothesis
+* nose2
+* robber
+
 # Installing
 1. Install required dependencies
 2. Run `$ python setup.py install`
+
+# Testing
+1. Install required dependencies
+2. Run `$ nose2`
 
 # License
 This library is licensed under MIT.
