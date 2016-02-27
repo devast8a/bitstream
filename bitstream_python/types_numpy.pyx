@@ -22,7 +22,7 @@ cdef write_uint8(BitStream stream, value, int64 byte, int64 bit):
     if bit == 0:
         stream.stream.append(value)
     else:
-        stream.stream[byte] = (value >> bit) & 0xFF
+        stream.stream[byte] |= (value >> bit) & 0xFF
         stream.stream.append((value << (UNIT_SIZE - bit)) & 0xFF)
 
 defaultFactory.register(TypeInfo(numpy.uint8,
