@@ -33,7 +33,7 @@ cdef class BitStream:
     def __len__(self):
         return self.offsetWrite - self.offsetRead
 
-    cpdef write(BitStream self, value, type key, int count = -1):
+    cpdef write(BitStream self, value, type key, int64 count = -1):
         cdef TypeInfo typeinfo = self.database[key]
         cdef validator = typeinfo.validator
         cdef writer = typeinfo.writer
@@ -70,7 +70,7 @@ cdef class BitStream:
                 # Advance pointer
                 self.offsetWrite += typeinfo.length
 
-    cpdef read(BitStream self, type key, int count = -1):
+    cpdef read(BitStream self, type key, int64 count = -1):
         cdef TypeInfo typeinfo = self.database[key]
         cdef State state
         cdef int64 byte
