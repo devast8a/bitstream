@@ -47,8 +47,8 @@ To build/install:
 To test:
 * Cython
 * numpy
+* py.test
 * hypothesis
-* nose2
 * robber
 
 # Installing
@@ -57,7 +57,7 @@ To test:
 
 # Testing
 1. Install required dependencies
-2. Run `$ nose2`
+2. Run `$ python setup.py test`
 
 # License
 This library is licensed under MIT.

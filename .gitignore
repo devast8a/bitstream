@@ -8,4 +8,7 @@ dist/
 *.pyo
 *.c
 *.pyd
+
+# Testing
 .hypothesis/
+.cache/
