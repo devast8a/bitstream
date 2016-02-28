@@ -13,6 +13,10 @@ class ReadError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
 
+class WriteError(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
 cdef class BitStream:
     def __init__(self, stream = None):
         self.database = defaultFactory.database
@@ -41,19 +45,25 @@ cdef class BitStream:
             bit = self.offsetWrite % UNIT_SIZE
 
             if validator and not validator(value):
-                raise Exception("Input did not validate")
+                raise WriteError("Input did not validate")
 
             writer(self, value, byte, bit)
 
             # Advance pointer
             self.offsetWrite += typeinfo.length
         else:
+            if count < 0:
+                raise WriteError("Invalid count specified")
+
+            if count > len(value):
+                raise WriteError("Count is greater than the length of the input")
+
             for i in range(count):
                 byte = self.offsetWrite / UNIT_SIZE
                 bit = self.offsetWrite % UNIT_SIZE
 
                 if validator and not validator(value[i]):
-                    raise Exception("Input did not validate")
+                    raise WriteError("Input did not validate")
 
                 writer(self, value[i], byte, bit)
 
@@ -109,6 +119,9 @@ cdef class BitStream:
 
             # Return an array
             else:
+                if count < 0:
+                    raise ReadError("Invalid count specified")
+
                 # Check for underrun
                 if self.offsetRead + (typeinfo.length * count) > self.offsetWrite:
                     raise ReadError("end of stream")
