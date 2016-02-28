@@ -57,7 +57,7 @@ To test:
 
 # Testing
 1. Install required dependencies
-2. Run `$ python setup.py test`
+2. Run `$ python setup.py install test`
 
 # License
 This library is licensed under MIT.
