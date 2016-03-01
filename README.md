@@ -60,4 +60,4 @@ To test:
 2. Run `$ python setup.py install test`
 
 # License
-This library is licensed under MIT.
+Licensed under the MIT License, refer to LICENSE.md for more information.
